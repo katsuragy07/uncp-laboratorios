@@ -1,0 +1,226 @@
+@inject('m_laboratorio','App\Models\Laboratorio')
+@inject('m_persona','App\Models\Persona')
+@inject('m_asignatura','App\Models\Asignatura')
+@inject('m_unidadmedida','App\Models\Unidad_medida')
+@inject('m_proveedor','App\Models\Proveedor')
+@inject('m_periodo','App\Models\Periodo')
+@inject('funciones','App\Http\Controllers\FuncionesController')
+<script>
+$(function(){
+	$('#modal_mante').modal('show');
+})
+recargarAjaxUbigeo();
+</script>
+<div class="modal fade" id="modal_mante" tabindex="-1" role="dialog" aria-labelledby="largemodal" aria-hidden="true">
+		<div class="modal-dialog modal-lg " role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="largemodal1"> <i class="fa fa-plus"></i> Nuevo Investigación</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<form class="form-horizontal" action="{{ route('guardar.infoinvestigacion') }}" method="POST" enctype="multipart/form-data">
+					@csrf
+				<div class="modal-body">
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Laboratorio</label>
+						<div class="col-md-6">
+
+							<select name="laboratoriodet_id" id="laboratoriodet_id" required="" class="form-control" >
+								<option value="">Seleccionar...</option>
+								@foreach($laboratorio_det as $laboratorio)
+								<option @if($laboratorio->id == @$info->laboratoriodet_id) selected @endif value="{{ $laboratorio->id }}">{{ $laboratorio->full_name }}</option>
+								@endforeach
+							</select>
+						</div>
+					</div> 
+					
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Semestre Académico:</label>
+						<div class="col-md-6">
+
+							<select name="periodo_id" id="periodo_id" required="" class="form-control">				
+								<option value="">-- Seleccionar --</option>
+								@foreach($m_periodo::orderby('periodo','DESC')->get() as $periodo)
+								<option @if($periodo->id == @$info->periodo_id) selected @endif value="{{ $periodo->id }}">{{ $periodo->periodo }}</option>
+								@endforeach
+							</select>
+						</div>
+					</div> 
+					
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Investigador Principal</label>
+						<div class="col-md-7">
+							<select id="solicitante_id" name="solicitante_id" style="width: 100%;" class="select2AjaxPersona" required="" >
+								@if(@$info->solicitante_id>0)
+									<option selected value="{{ $info->solicitante_id }}">{{ $funciones->info_persona($info->solicitante_id) }} </option>
+								@endif
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<button type="button" class="btn btn-warning" onclick="abrirModalPersona('solicitante_id');" > 
+                                	<i class="fa fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="abrirModalPersona('solicitante_id','Nuevo');" > 
+                                	<i class="fa fa-plus"></i>
+                            </button>
+						</div>
+
+					</div>
+
+			
+
+
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Código del Proyecto</label>
+						<div class="col-md-9">
+							<input type="text" name="cod_proyecto" class="form-control" autocomplete="off" value="{{ @$info->cod_proyecto }}">
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Nombre del Proyecto</label>
+						<div class="col-md-9">
+						
+							<textarea class="form-control" name="nom_proyecto" id="nom_proyecto" required="" rows="3"> {{ @$info->nom_proyecto }}</textarea>
+							
+						</div>
+					</div>  
+
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Equipo de Investigadores</label>
+						<div class="col-md-9">
+						
+							<textarea class="form-control" name="responsables" id="responsables" required="" rows="3"> {{ @$info->responsables }}</textarea>
+							
+						</div>
+					</div> 
+
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Fuente Financiamiento</label>
+						<div class="col-md-9">
+							<input type="text" name="fuente_finan" id="fuente_finan" autocomplete="off" class="form-control"  value="{{ @$info->fuente_finan }}">
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Monto</label>
+						<div class="col-md-9">
+							<input type="text" name="monto_otorgar" id="monto_otorgar" autocomplete="off" class="form-control"  value="{{ @$info->monto_otorgar }}">
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Grupo Investigación</label>
+						<div class="col-md-9">
+							<input type="text" name="centro_inv" id="centro_inv" autocomplete="off" class="form-control"  value="{{ @$info->centro_inv }}">
+						</div>
+					</div>
+
+					
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Linea Investigación</label>
+						<div class="col-md-9">
+							<input type="text" name="linea_inv" id="linea_inv" class="form-control" autocomplete="off" value="{{ @$info->linea_inv }}">
+						</div>
+					</div>
+
+					
+
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Aseguramiento de la Calidad</label>
+						<div class="col-md-9">
+							<input type="file" name="aseg_calidad" id="aseg_calidad" accept=".pdf" class="form-control"  value="{{ @$info->monto_otorgar }}" style="display:none;">
+							<div class="flex mt-2" style="padding: 5px;align-items: center;text-align: center;border-radius: 5px;border: dashed 1px #29327f;cursor: pointer;color: #29327f;" id="op_calidad">
+								<i class="las la-cloud-upload-alt" style="font-size: 40px;"></i> 
+							</div>
+							<div class="flex m-2" style="color: #29327f;font-size: 1.1rem;max-width: 100%;" id="val_calidad"></div>
+							<?php 
+								if(@$info->aseg_calidad!=''){
+									
+								?><a href="files/infoinvestigacion/{{@$info->aseg_calidad}}" class="f_aseg_calidad text-info" target="_blank" title="Descargar"><?php  echo @$info->aseg_calidad; ?></a>
+								<input type="hidden" name="f_aseg_calidad" id="f_aseg_calidad" value="{{@$info->aseg_calidad}}">
+								<i onclick="elimfile('f_aseg_calidad');" class="f_aseg_calidad fa fa-lg fa-times-circle  txt-color-red" style="cursor: pointer;"></i>
+							<?php }?>
+
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label class="col-md-3 form-label">Resultado de la Investigación</label>
+						<div class="col-md-9">
+							<input type="file" name="resultado_inv" id="resultado_inv" accept=".pdf" class="form-control"  value="{{ @$info->monto_otorgar }}" style="display:none;">
+							<div class="flex mt-2" style="padding: 5px;align-items: center;text-align: center;border-radius: 5px;border: dashed 1px #29327f;cursor: pointer;color: #29327f;" id="op_resultado">
+								<i class="las la-cloud-upload-alt" style="font-size: 40px;"></i> 
+							</div>
+							<div class="flex m-2" style="color: #29327f;font-size: 1.1rem;max-width: 100%;" id="val_resultado" ></div>
+							<?php 
+								if(@$info->resultado_inv!=''){
+								?><a href="files/infoinvestigacion/{{@$info->resultado_inv}}" class="f_resultado_inv text-info" target="_blank" title="Descargarddd"><?php  echo @$info->resultado_inv; ?></a>
+								<input type="hidden" name="f_resultado_inv" id="f_resultado_inv" value="{{@$info->resultado_inv}}">
+								<i onclick="elimfile('f_resultado_inv');" class="f_resultado_inv fa fa-lg fa-times-circle  txt-color-red" style="cursor: pointer;"></i>
+							<?php }?>
+
+
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="hidden" name="id" value="{{ @$info->id }}">
+					<input type="hidden" name="tipo_equipo_id" value="2"><!-- 2 Material-->
+					<input type="hidden" name="usuario_id" id="usuario_id" value="20">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+					<button type="submit" class="btn btn-primary">Guardar</button>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script>
+	$(document).ready(function() {
+		$('#op_calidad').click(function() { $('#aseg_calidad').click(); });
+		$('#aseg_calidad').change(function() {
+			if(jQuery.isEmptyObject($(this)[0].files[0])){
+				$('#val_calidad').html('');	
+				return;
+			}
+			$('#val_calidad').html($(this)[0].files[0].name);
+		});
+		$('#op_resultado').click(function() { $('#resultado_inv').click(); });
+		$('#resultado_inv').change(function() {
+			if(jQuery.isEmptyObject($(this)[0].files[0])){
+				$('#val_resultado').html('');	
+				return;
+			}
+			$('#val_resultado').html($(this)[0].files[0].name);
+		});
+	});
+
+	recargarAjaxPersona();
+ 	var x_combo_persona = '';
+	function abrirModalPersona(tipo,accion){
+   		if(accion=='Nuevo'){
+   			x_id = '';
+   		}else{
+   			x_id = $("#"+tipo).val();
+   		}
+   		x_combo_persona = tipo;
+   		var urlnuevo = "{{ route('mant.persona') }}?id="+x_id;
+		$( "#div_mantPersona" ).html('Cargando...');
+		$( "#div_mantPersona" ).load(urlnuevo );
+    }
+
+	function x_fn_insertRS(){
+		option = $('#div_OptionPersona').html();
+		if(x_combo_persona == 'solicitante_id'){
+			$("#solicitante_id").html(option);
+			//recargarAjaxPersona();
+		}
+		 recargarAjaxPersona();
+		//console.log('sdfdsf');
+		
+	}
+	</script>
+
